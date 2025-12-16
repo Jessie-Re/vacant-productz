@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart | Vacant Productions</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #ff4da6;
+    margin-bottom: 20px;
+  }
+
+  .back-shop {
+    display: inline-block;
+    margin: 0 auto 30px auto;
+    padding: 10px 20px;
+    background: #ff4da6;
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.3s;
+  }
+
+  .back-shop:hover {
+    opacity: 0.8;
+  }
+
+  .cart-container {
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #222;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background: #111;
+  }
+
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  .item-info {
+    flex: 1;
+    margin-left: 15px;
+  }
+
+  .item-info h3 {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+  }
+
+  .item-info p {
+    margin-bottom: 5px;
+    color: #ff4da6;
+  }
+
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .quantity-controls button {
+    padding: 5px 10px;
+    border: none;
+    background: #ff4da6;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: opacity 0.3s;
+  }
+
+  .quantity-controls button:hover {
+    opacity: 0.8;
+  }
+
+  .remove-btn {
+    background: #b3003b;
+    color: white;
+  }
+
+  .total {
+    text-align: right;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  .clear-cart {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #ff4da6;
+    border: none;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: opacity 0.3s;
+  }
+
+  .clear-cart:hover {
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+
+<h1>Your Cart</h1>
+<a href="index.html" class="back-shop">Back to Shop</a>
+
+<div class="cart-container" id="cartContainer"></div>
+<p class="total" id="totalPrice">Total: $0</p>
+<button class="clear-cart" id="clearCart">Clear Cart</button>
+
+<script>
+// Load cart from localStorage
+let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+const cartContainer = document.getElementById('cartContainer');
+const totalPriceEl = document.getElementById('totalPrice');
+
+function renderCart() {
+  cartContainer.innerHTML = '';
+  let total = 0;
+
+  if (cartItems.length === 0) {
+    cartContainer.innerHTML = '<p>Your cart is empty.</p>';
+    totalPriceEl.innerText = 'Total: $0';
+    return;
+  }
+
+  cartItems.forEach((item, index) => {
+    total += item.price * item.qty;
+
+    const div = document.createElement('div');
+    div.classList.add('cart-item');
+
+    div.innerHTML = `
+      <img src="${item.img}" alt="${item.name}">
+      <div class="item-info">
+        <h3>${item.name}</h3>
+        <p>$${item.price}</p>
+        <div class="quantity-controls">
+          <button class="decrease">-</button>
+          <span>${item.qty}</span>
+          <button class="increase">+</button>
+          <button class="remove-btn">Remove</button>
+        </div>
+      </div>
+    `;
+
+    // Quantity buttons
+    div.querySelector('.increase').addEventListener('click', () => {
+      item.qty += 1;
+      saveAndRender();
+    });
+
+    div.querySelector('.decrease').addEventListener('click', () => {
+      if (item.qty > 1) {
+        item.qty -= 1;
+        saveAndRender();
+      }
+    });
+
+    // Remove button
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+      cartItems.splice(index, 1);
+      saveAndRender();
+    });
+
+    cartContainer.appendChild(div);
+  });
+
+  totalPriceEl.innerText = `Total: $${total.toFixed(2)}`;
+}
+
+// Save cart to localStorage and re-render
+function saveAndRender() {
+  localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  renderCart();
+}
+
+// Clear cart button
+document.getElementById('clearCart').addEventListener('click', () => {
+  cartItems = [];
+  localStorage.removeItem('cartItems');
+  renderCart();
+});
+
+// Initial render
+renderCart();
+</script>
+
+</body>
+</html>
