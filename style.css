@@ -1,393 +1,123 @@
-/* =========================
-   VARIABLES
-========================= */
-:root {
-  --pink: #ff4da6;
-  --black: #0a0a0a;
-  --white: #ffffff;
-  --gray: #b3b3b3;
-  --transition-speed: 0.3s;
-  --card-bg: #111;
-  --hover-bg: rgba(255,77,166,0.06);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Vacant Productions | Y2K Streetwear</title>
+
+<meta name="description" content="Vacant Productions is an independent streetwear label inspired by Y2K culture and underground fashion.">
+<meta name="author" content="Vacant Productions">
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Anton&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav>
+  <h1 class="title-container">
+    <span class="title-slide">VACANT PRODUCTIONS</span>
+    <span class="title-slide">VACANT PRODUCTIONS</span>
+    <span class="title-slide">VACANT PRODUCTIONS</span>
+  </h1>
+
+  <div class="cart" tabindex="0">
+    View Cart (<span id="cartCount">0</span>)
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h2>VACANT <span>STREETWEAR</span></h2>
+    <p>Changing style. Standing out.</p>
+  </div>
+</section>
+
+<!-- SHOP -->
+<section id="shop" class="shop">
+
+  <div class="products" style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+
+    <div class="product" style="max-width: 300px;">
+      <div class="img-holder">
+        <img src="hoodie.jpg" alt="Retro Wave Hoodie">
+      </div>
+      <h3>Retro Wave Hoodie</h3>
+      <p>$90</p>
+      <button data-product="Retro Wave Hoodie" data-price="90">Add to Cart</button>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- ABOUT -->
+<section id="about" class="about">
+  <h2>ABOUT VACANT</h2>
+  <p>
+    Vacant Productions is an independent streetwear label inspired by Y2K culture,
+    underground fashion, and creative rebellion.
+  </p>
+</section>
+
+<!-- SHIPPING -->
+<section class="policies">
+  <h2>SHIPPING & RETURNS</h2>
+  <p>
+    Orders ship within 3–5 business days. Returns accepted within 14 days of delivery.
+  </p>
+</section>
+
+<footer>
+  <p>© 2025 Vacant Productions</p>
+  <p>Independent Streetwear Label</p>
+  <a href="https://www.instagram.com/vacantproduction.us?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">
+    Instagram — @vacantproductions.us
+  </a>
+</footer>
+
+<script>
+// ---------------- CART ----------------
+const cartCountEl = document.getElementById('cartCount');
+let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+function updateCartCount() {
+  cartCountEl.textContent = cartItems.reduce((sum, item) => sum + item.qty, 0);
 }
 
-/* =========================
-   RESET & GLOBAL
-========================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
+document.querySelectorAll('.product button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const name = btn.dataset.product;
+    const price = Number(btn.dataset.price);
+    const img = btn.closest('.product').querySelector('img').src;
 
-body {
-  background: var(--black);
-  color: var(--white);
-  line-height: 1.6;
-}
+    const existing = cartItems.find(i => i.name === name);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cartItems.push({ name, price, img, qty: 1 });
+    }
 
-/* =========================
-   NAVIGATION
-========================= */
-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 18px 24px;
-  border-bottom: 1px solid #222;
-  position: relative;
-}
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    updateCartCount();
+  });
+});
 
-nav h1 {
-  color: var(--pink);
-  letter-spacing: 2px;
-  text-align: center;
-}
+updateCartCount();
 
-/* Sliding title */
-.title-container {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  max-width: min(60vw, calc(100% - 96px));
-  overflow: hidden;
-}
+// -------- CART CLICK --------
+document.querySelector('.cart').addEventListener('click', () => {
+  window.location.href = 'cart.html';
+});
+</script>
 
-.title-slide {
-  white-space: nowrap;
-  font-weight: 700;
-  animation: slide-left 12s linear infinite;
-}
-
-@keyframes slide-left {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
-
-/* Mobile hamburger */
-.mobile-nav {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.hamburger {
-  font-size: 28px;
-  color: var(--pink);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* =========================
-   MOBILE MENU
-========================= */
-.menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: var(--black);
-  border-top: 1px solid var(--pink);
-  z-index: 999;
-
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-
-  transform: translateY(-8px);
-  transition: max-height 0.35s ease, opacity 0.2s ease, transform 0.2s ease;
-}
-
-.menu.open {
-  max-height: 500px;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.menu-item {
-  border-top: 1px solid #222;
-}
-
-.submenu-toggle {
-  width: 100%;
-  padding: 15px;
-  background: none;
-  border: none;
-  color: var(--white);
-  font-weight: bold;
-  text-align: left;
-  cursor: pointer;
-}
-
-.submenu {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.2s ease;
-}
-
-.submenu.open {
-  max-height: 300px;
-  opacity: 1;
-}
-
-.submenu a {
-  display: block;
-  padding: 12px 24px;
-  color: var(--gray);
-  text-decoration: none;
-}
-
-.submenu a:hover {
-  background: var(--hover-bg);
-  color: var(--white);
-}
-
-/* =========================
-   HERO
-========================= */
-.hero {
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0 20px;
-}
-
-.hero h2 {
-  font-size: 3rem;
-  margin-bottom: 18px;
-}
-
-.hero span {
-  color: var(--pink);
-}
-
-.hero p {
-  color: var(--gray);
-}
-
-/* =========================
-   SHOP
-========================= */
-.shop {
-  padding: 80px 40px;
-}
-
-.shop h2 {
-  text-align: center;
-  margin-bottom: 50px;
-}
-
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
-}
-
-.product {
-  background: var(--card-bg);
-  border-radius: 10px;
-  padding: 14px;
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.product:hover {
-  transform: translateY(-6px);
-}
-
-.img-holder {
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.img-holder img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.product:hover img {
-  transform: scale(1.06);
-}
-
-.product h3 {
-  margin-bottom: 6px;
-}
-
-.product p {
-  color: var(--pink);
-  margin-bottom: 14px;
-}
-
-.product button {
-  background: var(--pink);
-  border: none;
-  padding: 10px 22px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.product button:hover {
-  opacity: 0.9;
-}
-
-/* =========================
-   CART BUTTON
-========================= */
-.cart {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--pink);
-  color: black;
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 1000;
-  transition: transform 0.2s ease, background 0.3s ease;
-}
-
-.cart:hover {
-  background: #e6008c;
-  transform: scale(1.05);
-}
-
-/* =========================
-   ABOUT / CONTACT
-========================= */
-.about,
-.contact {
-  padding: 80px 40px;
-  text-align: center;
-}
-
-.about p,
-.contact p {
-  max-width: 720px;
-  margin: 12px auto 0;
-  color: var(--gray);
-}
-
-/* =========================
-   FOOTER
-========================= */
-footer {
-  margin-top: 80px;
-  padding: 30px 0;
-  text-align: center;
-  border-top: 1px solid #222;
-  color: var(--gray);
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-  section {
-    padding: 60px 0;
-  }
-
-  .products {
-    grid-template-columns: 1fr;
-  }
-
-  .shop,
-  .about,
-  .contact {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .hero h2 {
-    font-size: 2.2rem;
-  }
-
-  /* =========================
-   MOBILE RESPONSIVENESS (NO HAMBURGER)
-========================= */
-@media (max-width: 768px) {
-
-  /* Make hero content fit smaller screens */
-  .hero {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .hero h2 {
-    font-size: 2.2rem;
-  }
-
-  .hero-content {
-    max-width: 90%;
-    margin: auto;
-  }
-
-  /* Products stacked vertically */
-  .products {
-    grid-template-columns: 1fr;
-    row-gap: 30px;
-    gap: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  /* Shop section padding */
-  .shop {
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 50px;
-    padding-bottom: 50px;
-  }
-
-  /* About & Policies section padding */
-  .about, .policies {
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 50px;
-    padding-bottom: 50px;
-  }
-
-  /* Cart button positioning */
-  .cart {
-    top: 15px;
-    right: 15px;
-    padding: 10px 16px;
-    font-size: 0.9rem;
-  }
-
-  /* Footer spacing */
-  footer {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-}
-
-/* =========================
-   GENERAL IMPROVEMENTS
-========================= */
-body, html {
-  overflow-x: hidden; /* prevent horizontal scroll on mobile */
-}
-
-.products .product {
-  margin: auto;
-}
+</body>
+</html>
 
 
 
